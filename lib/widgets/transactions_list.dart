@@ -4,61 +4,63 @@ import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactinos;
+  final Function _deleteTransaction;
 
-  TransactionList(this.transactinos);
+  TransactionList(this.transactinos, this._deleteTransaction);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 300,
-      child: ListView.builder(
-        itemCount: transactinos.length,
-        itemBuilder: (ctx, index) {
-          return Card(
-              child: Row(
+    return transactinos.isEmpty
+        ? Column(
             children: <Widget>[
+              Text(
+                'No transactions added yet!',
+                style: Theme.of(context).textTheme.title,
+              ),
+              SizedBox(
+                height: 20,
+              ),
               Container(
-                margin: EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.purple,
-                    width: 2,
-                  ),
-                ),
-                padding: EdgeInsets.all(
-                  10,
-                ),
-                child: Text(
-                  'Rs.${transactinos[index].amount}/-',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple,
-                      fontSize: 20),
+                height: 200,
+                child: Image.asset(
+                  'assets/images/waiting.png',
+                  fit: BoxFit.cover,
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    transactinos[index].title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            ],
+          )
+        : ListView.builder(
+            itemCount: transactinos.length,
+            itemBuilder: (ctx, index) {
+              return Card(
+                margin: EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 5,
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 30,
+                    child: Padding(
+                      padding: EdgeInsets.all(6),
+                      child: FittedBox(
+                          child: Text('Rs.${transactinos[index].amount}/-')),
                     ),
                   ),
-                  Text(
-                    DateFormat().format(transactinos[index].date),
-                    style: TextStyle(color: Colors.grey),
+                  title: Text(
+                    transactinos[index].title,
+                    style: Theme.of(context).textTheme.title,
                   ),
-                ],
-              )
-            ],
-          ));
-        },
-      ),
-    );
+                  subtitle: Text(
+                    DateFormat.yMMMMd().format(transactinos[index].date),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    color: Theme.of(context).errorColor,
+                    onPressed: () => _deleteTransaction(transactinos[index].id),
+                  ),
+                ),
+              );
+            },
+          );
   }
 }
